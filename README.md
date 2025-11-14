@@ -102,9 +102,9 @@ test3.log
 ```
 The `test_full.log` is taken from this [repo](https://github.com/logpai/loghub/tree/master/OpenSSH). The rest is just different part of the `test_full.log`
 
-## Project Setup and Demo
+## Project Setup and Demo on Youtube
 
-Loom Video
+[Youtube Demo Video](https://youtu.be/d7jxoFft9LM)
 
 ## License
 
