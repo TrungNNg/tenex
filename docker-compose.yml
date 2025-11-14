@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: tenex_user
+      POSTGRES_PASSWORD: tenex
+      POSTGRES_DB: tenex
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tenex_user -d tenex"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tenex-server:
+    build: ./tenex-server
+    ports:
+      - "4000:4000"
+    environment:
+      - ENV=development
+      - PORT=4000
+      - SERVER_IDLETIMEOUT=60
+      - SERVER_READTIMEOUT=10
+      - SERVER_WRITETIMEOUT=10
+      - POSTGRES_DSN=postgres://tenex_user:tenex@postgres/tenex?sslmode=disable
+      - POSTGRES_MAXOPENCONN=25
+      - POSTGRES_MAXIDLECONN=25
+      - POSTGRES_MAXIDLETIME=15
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  tenex-client:
+    build: ./tenex-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - tenex-server
+
+volumes:
+  postgres_data:
